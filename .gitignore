@@ -1,2 +1,5 @@
 data/train_img/*.jpg
 data/val_img/*.jpg
+*/__pycache__
+*/*/*.pyc
+tools/__pycache__/readingData.cpython-310.pyc

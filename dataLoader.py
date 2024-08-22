@@ -2,13 +2,13 @@
 import numpy as np
 import logging
 import tools.readingData as read
-
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 
 class ImageDataLoader:
     def __init__(self, image_paths, labels, batch_size=32, image_size=(224,224), shuffle=True, validation_split=0.2):
-        """image_paths, labelPaths are in lists"""
+        """image_paths, labels are in the lists"""
         self.image_paths=image_paths
         self.labels=labels
         self.batch_size=batch_size
@@ -24,7 +24,6 @@ class ImageDataLoader:
     
     def _load_image(self, imagePath, label):
         image =tf.io.read_file(imagePath)
-
         image = tf.image.decode_jpeg(image, channels=3)
         # image= tf.image.resize(image, self.image_size)
         image= tf.cast(image, tf.float32)/255.0 ### Making it O and 1
@@ -44,12 +43,14 @@ class ImageDataLoader:
         dataset = dataset.batch(self.batch_size)
         dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
         return dataset
-    
+    # def 
+
     def get_train_dataset(self):
         return self.train_dataset
 
     def get_val_dataset(self):
         return self.val_dataset
+    
     
     def __len__(self):
         return len(self.image_paths)
@@ -66,17 +67,34 @@ if __name__=="__main__":
     train_dataset= DataLoader.get_train_dataset()
     val_dataset =DataLoader.get_val_dataset()
 
+
     print("length of train datasets = ",len(train_dataset)*32)
     print("length of val datasets = ", len(val_dataset)*32)
+
+    fig, ax =plt.subplots(10,10, figsize=(10,10), sharex=True)
+    ax=ax.flatten()
+    count=0
     for index,(x_train, y_train) in enumerate(train_dataset):
-        if index==0:
-            print(x_train.shape)
-        assert x_train.shape==(32,64,64,3)
+        if index%25==0:
+            ax[count].imshow(x_train[0,...].numpy())
+            ax[count].axis('off') 
+            ax[count].set_title(int(y_train[0].numpy()))
+            print("label:", int(y_train[0].numpy()))
+            count+=1
+            assert x_train.shape==(32,64,64,3)
+    plt.show()
+    plt.savefig('output_image.png')
     
-    for index,(x_val, y_val) in enumerate(val_dataset):
-        if index==0:
-            print(x_val.shape)
-        assert x_val.shape==(32,64,64,3)
+    # for index,(x_val, y_val) in enumerate(val_dataset):
+    #     print(index)
+        # if index==len(val_dataset)-1:
+        #     print(x_val.shape)
+        # assert x_val.shape==(32,64,64,3)
+    
+    
+
+
+    
 
 
 
