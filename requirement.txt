@@ -1,0 +1,2 @@
+python3 -m pip install tensorflow[and-cuda]
+pip install -U scikit-learn
