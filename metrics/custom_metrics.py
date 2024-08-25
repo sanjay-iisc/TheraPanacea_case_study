@@ -25,9 +25,16 @@ class F1Score(tf.keras.metrics.Metric):
             recall = 1.0
         else:
             recall = self.tp / (self.tp + self.fn)
+        
+        if (self.tn + self.fp == 0):
+            specificity=1.0
+        else:
+            specificity= self.fp/ (self.tn + self.fp)
+            
+        
         f1_score = 2*((precision*recall)/(precision + recall))
   
-        return [f1_score, precision, recall]
+        return [f1_score, precision, recall, specificity]
 
     def reset_states(self):
         self.tp.assign(0)

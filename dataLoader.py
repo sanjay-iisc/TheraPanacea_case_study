@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 import tensorflow as tf
 
 class ImageDataLoader:
-    def __init__(self, image_paths, labels, batch_size=None, image_size=None, shuffle=True, validation_split=0.2):
+    def __init__(self, image_paths, labels, batch_size=None, image_size=None, shuffle=True, augument=None, validation_split=0.2):
         """image_paths, labels are in the lists"""
         self.image_paths=image_paths
         self.labels=labels
@@ -15,6 +15,7 @@ class ImageDataLoader:
         self.image_size=image_size
         self.is_shuffle=shuffle
         self.validation_split=validation_split
+        self.augument=augument
 
         self.train_paths, self.val_paths, self.train_labels, self.val_labels = self._split_paths_data()
 
@@ -32,6 +33,15 @@ class ImageDataLoader:
         image= tf.cast(image, tf.float32)/255.0 ### Making it O and 1
         return image, label
     
+    def _augment_image(self, image):
+        image = tf.image.random_flip_left_right(image)
+        image = tf.image.random_flip_up_down(image)
+        image = tf.image.random_brightness(image, max_delta=0.1)
+        image = tf.image.random_contrast(image, lower=0.9, upper=1.1)
+        image = tf.image.random_saturation(image, lower=0.9, upper=1.1)
+        image = tf.image.random_hue(image, max_delta=0.05)
+        return image
+    
     def _split_paths_data(self):
         train_paths, val_paths, train_labels, val_labels = train_test_split(self.image_paths, self.labels, 
                                                                             test_size=self.validation_split, stratify=self.labels, random_state=42)
@@ -40,8 +50,11 @@ class ImageDataLoader:
     def _build_dataset(self, img_paths, labels):
         dataset = tf.data.Dataset.from_tensor_slices((img_paths, labels))
         dataset = dataset.map(self._load_image, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+        if self.augument:
+            dataset = dataset.map(lambda x, y: (self._augment_image(x), y), num_parallel_calls=tf.data.experimental.AUTOTUNE)
         if self.is_shuffle:
-            dataset = dataset.shuffle(buffer_size=1024)
+            dataset = dataset.shuffle(buffer_size=len(img_paths))
+        
         dataset = dataset.batch(self.batch_size)
         dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
         return dataset
