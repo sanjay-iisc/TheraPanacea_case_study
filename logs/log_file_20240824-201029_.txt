@@ -1,0 +1,2 @@
+epoch:0, train_loss:0.1027, val_loss:0.1034, train_F1:0.9279, val_F1:0.9189, train_prec:0.8683, val_prec:0.8500, train_recall:0.9963, val_recall:1.0000, train_auc:0.6309, val_auc:0.8259, train_pr:0.9134, val_pr:0.9641
+epoch:1, train_loss:0.0956, val_loss:0.1076, train_F1:0.9284, val_F1:0.9189, train_prec:0.8681, val_prec:0.8500, train_recall:0.9977, val_recall:1.0000, train_auc:0.7480, val_auc:0.8604, train_pr:0.9477, val_pr:0.9706
