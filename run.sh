@@ -1,5 +1,5 @@
 #!/bin/bash
-source ~/env/bin/activate
+source ~/TheraEnv/bin/activate
 # python3 train.py --LR 0.001 --image_size 224 224 3 --B 8 --E 50 --dense_units 16 #checkpoint_20240824-212043
 # python3 tools/reading_plotting_Logfile.py
 ## second run on 25/7am
