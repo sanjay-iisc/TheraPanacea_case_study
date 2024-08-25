@@ -41,7 +41,7 @@ class ImageDataLoader:
         dataset = tf.data.Dataset.from_tensor_slices((img_paths, labels))
         dataset = dataset.map(self._load_image, num_parallel_calls=tf.data.experimental.AUTOTUNE)
         if self.is_shuffle:
-            dataset = dataset.shuffle(buffer_size=1024)
+            dataset = dataset.shuffle(buffer_size=2048)
         dataset = dataset.batch(self.batch_size)
         dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
         return dataset
