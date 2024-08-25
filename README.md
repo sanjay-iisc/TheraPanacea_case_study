@@ -15,6 +15,9 @@ Avoid using the `tensorflow[and-cuda]` pip option as it may lead to errors (tens
 
 
 
+['data/train_img/055135.jpg', 'data/train_img/074877.jpg', 'data/train_img/015414.jpg', 'data/train_img/080523.jpg', 'data/train_img/077587.jpg', 'data/train_img/086010.jpg', 'data/train_img/050029.jpg', 'data/train_img/083638.jpg', 'data/train_img/037938.jpg', 'data/train_img/086395.jpg']
+
+
 TensorFlow with cuda with pip
 python3 -m pip install tensorflow[and-cuda]---> please dont use it, have lots error. It has tensorflow==12.7
 

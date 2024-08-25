@@ -57,12 +57,13 @@ def binary_cross_entropy(y_true, y_pred,  epsilon_=1e-7 ):
 
 
 class TrainClassifier:
-    def __init__(self,lr_rate=None,_image_size=None, _batch_size=None, epochs=None, Dense_units=None,
+    def __init__(self,augment_data=None,lr_rate=None,_image_size=None, _batch_size=None, epochs=None, Dense_units=None,
                   prob_dropout=None, is_base_weights_train=False, model_name="VGG16_Based",_is_checkpoint_loaded=None, data_path="data") -> None:
         # model = models.vg16.VGG16_Based(256, input_shape=(*_image_size, 3), prob_dropout=0.1 ,is_vgg_weights_requ=False)
         # model =models.simple.simple_model()
         self.model_name=model_name
         self.lr_rate= lr_rate
+        self.augment_data=augment_data
         # self.accu = accuracy
         self.epochs=epochs
         self.BCe=tf.keras.losses.BinaryCrossentropy(from_logits=False)
@@ -83,7 +84,7 @@ class TrainClassifier:
         train_images_path=read.getTrainDataPathList( data_path+"/train_img")
         labels=read.getTrainLabels(data_path+"/label_train.txt")
 
-        Datasets_init=dataLoader.ImageDataLoader(train_images_path, labels, batch_size= _batch_size,image_size=self._image_size[:-1])
+        Datasets_init=dataLoader.ImageDataLoader(train_images_path, labels, batch_size= _batch_size,image_size=self._image_size[:-1], augument=self.augment_data)
         self.train_dataset=Datasets_init.get_train_dataset()
         self. val_dataset = Datasets_init.get_val_dataset()
     
@@ -163,8 +164,8 @@ class TrainClassifier:
                                             prob_dropout=self.prob_dropout,is_vgg_weights_requ=self.is_base_weights_train)
             assert self._image_size==(224,224,3),"It's MobileV2_based make dim as (224,224,3)" 
             if self._is_checkpoint_loaded:
-                start_epoch=50
-                checkpoint_path="checkpoint/checkpoint_20240824-212043/epoch_50.ckpt"
+                start_epoch=70
+                checkpoint_path="checkpoint/checkpoint_20240825-134313/epoch_70.ckpt"
                 model.load_weights(checkpoint_path)
                 tf.print("******************VGG16_Based: Checkpoint loaded**********************************")
             else:
@@ -175,9 +176,9 @@ class TrainClassifier:
             tf.print("**************************MobileV2_Based******************")
             # assert self._image_size==(224,224,3),"It's MobileV2_based make dim as (224,224,3) " 
         initial_learning_rate=self.lr_rate
-        decay_freauency=5
+        decay_freauency=2
         decay_steps=len(self.train_dataset)*decay_freauency
-        decay_rate=0.9
+        decay_rate=0.8
         lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(initial_learning_rate,
                                                                      decay_steps=decay_steps,decay_rate=decay_rate,staircase=True)
         
@@ -201,7 +202,7 @@ class TrainClassifier:
             v_pr=self.val_pr_metric.result()
             
 
-            log_string="epoch:{}, train_loss:{:<1.4f}, val_loss:{:<1.4f}, train_F1:{:<1.4f}, val_F1:{:<1.4f}, train_prec:{:<1.4f}, val_prec:{:<1.4f}, train_recall:{:<1.4f}, val_recall:{:<1.4f}, train_auc:{:<1.4f}, val_auc:{:<1.4f}, train_pr:{:<1.4f}, val_pr:{:<1.4f}".format(
+            log_string="epoch:{}, train_loss:{:<1.4f}, val_loss:{:<1.4f}, train_F1:{:<1.4f}, val_F1:{:<1.4f}, train_prec:{:<1.4f}, val_prec:{:<1.4f}, train_recall:{:<1.4f}, val_recall:{:<1.4f}, train_auc:{:<1.4f}, val_auc:{:<1.4f}, train_pr:{:<1.4f}, val_pr:{:<1.4f}, train_fpr:{:<1.4f}, val_fpr:{:<1.4f}".format(
                 epoch,
                 np.mean(train_losses), 
                 np.mean(val_losses), 
@@ -211,7 +212,8 @@ class TrainClassifier:
                 val_F1[1].numpy(),
                 train_F1[2].numpy(), 
                 val_F1[2].numpy(),
-                t_auc.numpy(), v_auc.numpy(), t_pr.numpy(), v_pr.numpy())
+                t_auc.numpy(), v_auc.numpy(), t_pr.numpy(), v_pr.numpy(), train_F1[3].numpy(), 
+                val_F1[3].numpy())
             
             print(log_string)
 
@@ -241,12 +243,13 @@ if __name__=="__main__":
         parser.add_argument('--base_train', type=bool, default=False, help='Base model training is_rquired')
         parser.add_argument('--ProbD', type=float, default=0.5, help='Probability Dropout for Vgg16')
         parser.add_argument('--is_chkpt_load', type=bool, default=False, help='checkpoint loaded')
-
+        parser.add_argument('--is_aug_data', type=bool, default=True, help='checkpoint loaded')
         return parser.parse_args()
     
     args = parse_arguments()
 
-    tf.print(f"Is checkpoint loaded={args.is_chkpt_load}, "
+    tf.print(f" Augument data={args.is_aug_data}, "
+      f"Is checkpoint loaded={args.is_chkpt_load}, "
       f"Learning rate={args.LR}, "
       f"image_size={tuple(args.image_size)}, "
       f"_batch_size={args.B}, "
@@ -257,7 +260,7 @@ if __name__=="__main__":
       f"model_name={args.base_model}")
 
     
-    Train_1=TrainClassifier(lr_rate=args.LR, _image_size=tuple(args.image_size), _batch_size=args.B,  epochs=args.E, Dense_units=args.dense_units,
+    Train_1=TrainClassifier(augment_data=args.is_aug_data,lr_rate=args.LR, _image_size=tuple(args.image_size), _batch_size=args.B,  epochs=args.E, Dense_units=args.dense_units,
                             prob_dropout=args.ProbD, is_base_weights_train=args.base_train, model_name=args.base_model,_is_checkpoint_loaded=args.is_chkpt_load)()
 
    
