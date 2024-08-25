@@ -1,20 +1,17 @@
 # TheraPanacea Case Study: Binary Classification Problem
 
 ## Problem Description
-The objective of this case study is to classify images based on whether they include a hat/spec or not, using only the face. We are exploring shallow learning techniques, but will eventually transition to Convolutional Neural Networks (CNNs) given their state-of-the-art performance in image classification tasks.
+The objective of this case study is to classify images based on whether they include a hat/spec/..etc or not, using only the face. 
 
 ## System Configuration
 - **Operating System**: Linux
-- **TensorFlow Version**: 12.5
+- **TensorFlow Version**: 2.15
 - **CUDA Version**: 12.2
 - **cuDNN Version**: 8.9.7
 
 ## TensorFlow Installation with CUDA
-To install TensorFlow with CUDA support, avoid using the `tensorflow[and-cuda]` pip option as it may lead to errors. Instead, use the following installation steps:
+Avoid using the `tensorflow[and-cuda]` pip option as it may lead to errors (tensorflow==2.17, new version). Instead, use the following installation steps:
 
-1. Install TensorFlow (compatible version):
-   ```bash
-   python3 -m pip install tensorflow==12.5
 
 
 

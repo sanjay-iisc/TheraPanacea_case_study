@@ -57,12 +57,12 @@ def binary_cross_entropy(y_true, y_pred,  epsilon_=1e-7 ):
 
 
 class TrainClassifier:
-    def __init__(self, optimizer,_image_size=None, _batch_size=None, epochs=None, Dense_units=None,
-                  prob_dropout=None, is_base_weights_train=False, model_name="VGG16_Based", data_path="data") -> None:
+    def __init__(self,lr_rate=None,_image_size=None, _batch_size=None, epochs=None, Dense_units=None,
+                  prob_dropout=None, is_base_weights_train=False, model_name="VGG16_Based",_is_checkpoint_loaded=None, data_path="data") -> None:
         # model = models.vg16.VGG16_Based(256, input_shape=(*_image_size, 3), prob_dropout=0.1 ,is_vgg_weights_requ=False)
         # model =models.simple.simple_model()
         self.model_name=model_name
-        self.opt = optimizer
+        self.lr_rate= lr_rate
         # self.accu = accuracy
         self.epochs=epochs
         self.BCe=tf.keras.losses.BinaryCrossentropy(from_logits=False)
@@ -70,7 +70,7 @@ class TrainClassifier:
         self.Dense_units=Dense_units
         self.is_base_weights_train=is_base_weights_train
         self.prob_dropout=prob_dropout
-        
+        self._is_checkpoint_loaded=_is_checkpoint_loaded
         self.train_f1score_metric = metric.F1Score()
         self.val_f1score_metric = metric.F1Score()
 
@@ -88,7 +88,7 @@ class TrainClassifier:
         self. val_dataset = Datasets_init.get_val_dataset()
     
     @tf.function
-    def apply_gradient(self, model ,x, y):
+    def apply_gradient(self, model, optimizer ,x, y):
         with tf.GradientTape() as tape:
             logits = model(x)
             # loss_value = binary_cross_entropy(y, logits)
@@ -96,15 +96,9 @@ class TrainClassifier:
             # loss_value=self.BCe(y, logits, sample_weight=[0.15])
         
         gradients = tape.gradient(loss_value, model.trainable_weights)
-        self.opt.apply_gradients(zip(gradients, model.trainable_weights))
+        optimizer.apply_gradients(zip(gradients, model.trainable_weights))
         return logits, loss_value
     
-    @classmethod
-    def lr_schedule(self, epoch, lr):
-        if epoch % 10 == 0 and epoch != 0:
-            lr = lr * 0.5
-        return lr
-
     def one_epoch_val(self, model):
         total=len(self.val_dataset)
         bar_length = int(30)
@@ -133,13 +127,13 @@ class TrainClassifier:
         return losses
 
     
-    def one_epoch_train(self, model):
+    def one_epoch_train(self, model,optimizer):
         total=len(self.train_dataset)
         bar_length = int(30)
         losses = []
         for step, (x_batch_train, y_true_train) in enumerate(self.train_dataset):
-           logits, loss_value = self.apply_gradient(model,x_batch_train, y_true_train)
-           
+           logits, loss_value = self.apply_gradient(model,optimizer,x_batch_train, y_true_train)
+           current_lr = float(optimizer.lr)
            y_pred_train=tf.squeeze(tf.where(logits >= 0.5, 1.0, 0.0))
            
            self.train_f1score_metric.update_state(tf.cast(y_true_train, dtype=tf.int32), tf.cast(y_pred_train, dtype=tf.int32))
@@ -152,13 +146,15 @@ class TrainClassifier:
            percent = 100.0 * step / total
            num_equals = int(percent / (100.0 / bar_length))
            progress_bar = '[' + '=' * num_equals + ' ' * (bar_length - num_equals) + ']'
-           sys.stdout.write('\rOne Training Batch: {} {:>3}% loss:{:.4f}'.format(progress_bar, int(percent), loss_value))
+           sys.stdout.write('\rOne Training Batch: {} {:>3}% loss:{:.4f} current_lr:{:.6f}'.format(progress_bar, int(percent), loss_value, current_lr))
            sys.stdout.flush() 
         sys.stdout.write('\n')
         return losses
     
    
     def __call__(self):
+        start_epoch=0
+        end_epoch=self.epochs
 
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
         Checkpoint_filename = f"checkpoint/checkpoint_{timestamp}"
@@ -166,19 +162,31 @@ class TrainClassifier:
             model = models.vg16.VGG16_Based(self.Dense_units,input_shape=self._image_size, 
                                             prob_dropout=self.prob_dropout,is_vgg_weights_requ=self.is_base_weights_train)
             assert self._image_size==(224,224,3),"It's MobileV2_based make dim as (224,224,3)" 
-            tf.print("******************VGG16_Based**********************************")
-
+            if self._is_checkpoint_loaded:
+                start_epoch=50
+                checkpoint_path="checkpoint/checkpoint_20240824-212043/epoch_50.ckpt"
+                model.load_weights(checkpoint_path)
+                tf.print("******************VGG16_Based: Checkpoint loaded**********************************")
+            else:
+                tf.print("******************VGG16_Based**********************************")
+        
         elif self.model_name=="MobileV2_Based":
             model =models.mobile_v2.MobileV2_Based(self.Dense_units,input_shape=self._image_size,is_mobile_weights_requ=self.is_base_weights_train)
             tf.print("**************************MobileV2_Based******************")
             # assert self._image_size==(224,224,3),"It's MobileV2_based make dim as (224,224,3) " 
-    
-            
+        initial_learning_rate=self.lr_rate
+        decay_freauency=5
+        decay_steps=len(self.train_dataset)*decay_freauency
+        decay_rate=0.9
+        lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(initial_learning_rate,
+                                                                     decay_steps=decay_steps,decay_rate=decay_rate,staircase=True)
+        
+        optimizer =tf.keras.optimizers.SGD(learning_rate=lr_schedule, momentum=0.9, weight_decay=1e-4)
         checkpoint_callback = call_back.CheckpointCallback(model, checkpoint_path=Checkpoint_filename, save_freq=2)
 
-        for epoch in range(self.epochs):
+        for epoch in np.arange(start_epoch, end_epoch, 1):
             tf.print("\nepoch {}/{}".format(epoch+1,self.epochs))
-            train_losses = self.one_epoch_train(model)
+            train_losses = self.one_epoch_train(model, optimizer)
             val_losses =self.one_epoch_val(model)
 
             checkpoint_callback.on_epoch_end(epoch)
@@ -232,12 +240,14 @@ if __name__=="__main__":
         parser.add_argument('--base_model', type=str, default="VGG16_Based", help='Base model name (VGG16_Based,MobileV2_Based)')
         parser.add_argument('--base_train', type=bool, default=False, help='Base model training is_rquired')
         parser.add_argument('--ProbD', type=float, default=0.5, help='Probability Dropout for Vgg16')
+        parser.add_argument('--is_chkpt_load', type=bool, default=False, help='checkpoint loaded')
 
         return parser.parse_args()
     
     args = parse_arguments()
 
-    tf.print(f"Learning rate={args.LR}, "
+    tf.print(f"Is checkpoint loaded={args.is_chkpt_load}, "
+      f"Learning rate={args.LR}, "
       f"image_size={tuple(args.image_size)}, "
       f"_batch_size={args.B}, "
       f"epochs={args.E}, "
@@ -246,8 +256,8 @@ if __name__=="__main__":
       f"is_base_weights_train={args.base_train}, "
       f"model_name={args.base_model}")
 
-    optimizer =tf.keras.optimizers.SGD(learning_rate=args.LR)
-    Train_1=TrainClassifier(optimizer, _image_size=tuple(args.image_size), _batch_size=args.B,  epochs=args.E, Dense_units=args.dense_units,
-                            prob_dropout=args.ProbD, is_base_weights_train=args.base_train, model_name=args.base_model)()
+    
+    Train_1=TrainClassifier(lr_rate=args.LR, _image_size=tuple(args.image_size), _batch_size=args.B,  epochs=args.E, Dense_units=args.dense_units,
+                            prob_dropout=args.ProbD, is_base_weights_train=args.base_train, model_name=args.base_model,_is_checkpoint_loaded=args.is_chkpt_load)()
 
    
