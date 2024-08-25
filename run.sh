@@ -10,6 +10,7 @@ source ~/env/bin/activate
 # checkpoint_20240825-145759
 # python3 train.py --LR 0.001 --B 16 --E 200 --dense_units 1000 --image_size 64 64 3 --base_model MobileV2_Based
 
-#5---checkpoint_20240825-165234
-python3 train.py --LR 0.001 --B 16 --E 200 --dense_units 256 --image_size 64 64 3 --base_model MobileV2_Based --is_aug_data True
+#5---log_file_20240825-165455_
+# python3 train.py --LR 0.001 --B 16 --E 200 --dense_units 256 --image_size 64 64 3 --base_model MobileV2_Based --is_aug_data True
 
+python3 test.py

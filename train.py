@@ -24,7 +24,6 @@ if gpus:
 
 
 
-
 @tf.function
 def weighted_binary_cross_entropy_2(y_true, y_pred, weights=[0.87, 0.13]):
     bce_loss=tf.keras.losses.binary_crossentropy(y_true, tf.squeeze(y_pred), from_logits=False)
@@ -202,7 +201,7 @@ class TrainClassifier:
             v_pr=self.val_pr_metric.result()
             
 
-            log_string="epoch:{}, train_loss:{:<1.4f}, val_loss:{:<1.4f}, train_F1:{:<1.4f}, val_F1:{:<1.4f}, train_prec:{:<1.4f}, val_prec:{:<1.4f}, train_recall:{:<1.4f}, val_recall:{:<1.4f}, train_auc:{:<1.4f}, val_auc:{:<1.4f}, train_pr:{:<1.4f}, val_pr:{:<1.4f}, train_specificity:{:<1.4f}, val_specificity:{:<1.4f}".format(
+            log_string="epoch:{}, train_loss:{:<1.4f}, val_loss:{:<1.4f}, train_F1:{:<1.4f}, val_F1:{:<1.4f}, train_prec:{:<1.4f}, val_prec:{:<1.4f}, train_recall:{:<1.4f}, val_recall:{:<1.4f}, train_auc:{:<1.4f}, val_auc:{:<1.4f}, train_pr:{:<1.4f}, val_pr:{:<1.4f}, train_fpr:{:<1.4f}, val_fpr:{:<1.4f}".format(
                 epoch,
                 np.mean(train_losses), 
                 np.mean(val_losses), 
