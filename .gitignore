@@ -4,4 +4,3 @@ data/val_img/*.jpg
 *.pyc 
 checkpoint/checkpoint_**/*
 
-.venv

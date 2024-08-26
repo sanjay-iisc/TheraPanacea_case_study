@@ -37,9 +37,9 @@ python3 train.py --LR 0.001 --B 16 --E 200 --dense_units 256 --image_size 224 22
 
 ### HTER
 False Acceptance Rate (FAR):
-\[
+$$[
 \text{FAR} = \frac{\text{Number of False Positives (FP)}}{\text{Total Number of Actual Negatives (N)}} = \frac{\text{FP}}{\text{TN} + \text{FP}}
-\]
+\]$$
 
 False Rejection Rate (FRR):
 
@@ -71,8 +71,7 @@ False Rejection Rate (FRR):
 	<img src="pictures/HTER_curve.png" alt="HTER curve">
 </div>
 
-
-
+As required in cased, the threshold is based on HTER to minimize it.
 
 #
 
