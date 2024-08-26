@@ -1,8 +1,21 @@
 # TheraPanacea Case Study: Binary Classification Problem
 
 ## Problem Description
-The objective of this case study is to classify images based on whether they include a hat/spec/..etc or not, using only the face. 
-![alt text](pictures/data_image.png)
+The objective of this case study is to develop a binary classifier that determines whether images contain specific accessories (such as hats, glasses, etc.) based solely on facial features. The goal is to minimize the Half-Total Error Rate (HTER).
+
+### Dataset Overview
+- **Training Data**: Contains 100,000 labeled images.
+- **Validation Data**: A separate validation set of 20,000 unlabeled images is provided in the `val_imag` folder.
+- **Train/Validation Split**: The training dataset is split into 80% for training and 20% for validation.
+
+![Dataset Overview](pictures/data_image.png)
+
+### Data Distribution
+<div align="center">
+	<img src="pictures/data_dist.png" alt="Data Distribution">
+</div>
+
+The dataset is highly imbalanced, with fewer instances of the "0" label compared to the "1" label in both the training and validation sets. To address this, a weighted approach has been applied to train the classifier.
 
 ## System Configuration
 - **Operating System**: Linux
@@ -10,28 +23,25 @@ The objective of this case study is to classify images based on whether they inc
 - **CUDA Version**: 12.2
 - **cuDNN Version**: 8.9.7
 
-## Data Distribution
-<div align="center">
-	<img src="pictures/data_dist.png">
-</div>
-
-
-
-
 ## Training
 
+To set up the environment and start training, run the following commands:
+
+```bash
 cd ~
 python3 -m venv env
-
-source ~/env/bin/activate;
-
-python3 train.py --LR 0.001 --B 16 --E 200 --dense_units 256 --image_size 64 64 3 --base_model MobileV2_Based --is_aug_data True
-
-## Testing
-Jupyter file test_i.ipynb and python script named test.py: can be run by python3 test.py
+source ~/env/bin/activate
+python3 train.py --LR 0.001 --B 16 --E 200 --dense_units 256 --image_size 224 224 3 --base_model VGG16_Based --is_aug_data True
+```
+train.py is written in lower api of tensorflow and weighted cross entropy function is used for loss to try to address the imblanced data.
 
 
 
+### ROC curve:
+
+### Detection curve:
+
+### HTER curve:
 
 
 
