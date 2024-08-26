@@ -37,19 +37,13 @@ python3 train.py --LR 0.001 --B 16 --E 200 --dense_units 256 --image_size 224 22
 
 ### HTER
 **False Acceptance Rate (FAR):**
-$$[
-\text{FAR} =  \frac{\text{FP}}{\text{TN} + \text{FP}}
-\]$$
+$$\text{FAR} =  \frac{\text{FP}}{\text{TN} + \text{FP}}$$
 
 **False Rejection Rate (FRR):**
 
-$$\[
-\text{FRR} = \frac{\text{FN}}{\text{TP} + \text{FN}}
-\]$$
+$$\text{FRR} = \frac{\text{FN}}{\text{TP} + \text{FN}}$$
 
-$$\[
-\text{HTER}=\frac{\text{FRR}+\text{FAR}}{2}
-\]$$
+$$\text{HTER}=\frac{\text{FRR}+\text{FAR}}{2}$$
 
 ### ROC curve:
 
