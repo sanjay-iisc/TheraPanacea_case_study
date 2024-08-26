@@ -36,20 +36,20 @@ python3 train.py --LR 0.001 --B 16 --E 200 --dense_units 256 --image_size 224 22
 `train.py` is written in lower api of tensorflow and variable is self explainatory and weighted cross entropy function is used for loss to try to address the imblanced data. The base model is VGG16 trained weight on `imagenet`
 
 ### HTER
-False Acceptance Rate (FAR):
+**False Acceptance Rate (FAR):**
 $$[
-\text{FAR} = \frac{\text{Number of False Positives (FP)}}{\text{Total Number of Actual Negatives (N)}} = \frac{\text{FP}}{\text{TN} + \text{FP}}
+\text{FAR} =  \frac{\text{FP}}{\text{TN} + \text{FP}}
 \]$$
 
-False Rejection Rate (FRR):
+**False Rejection Rate (FRR):**
 
-\[
-\text{FRR} = \frac{\text{Number of False Negatives (FN)}}{\text{Total Number of Actual Positives (P)}} = \frac{\text{FN}}{\text{TP} + \text{FN}}
-\]
+$$\[
+\text{FRR} = \frac{\text{FN}}{\text{TP} + \text{FN}}
+\]$$
 
-\[
+$$\[
 \text{HTER}=\frac{\text{FRR}+\text{FAR}}{2}
-\]
+\]$$
 
 ### ROC curve:
 
