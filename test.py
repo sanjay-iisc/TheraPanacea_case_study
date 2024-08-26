@@ -110,6 +110,18 @@ def plot_det(Tr, Pr):
     plt.grid()
     plt.legend()
     plt.savefig("pictures/DET_curve.png")
+
+    HTER=(fnr+fpr)/2
+    idx = np.argmin(HTER)
+    plt.figure()
+    plt.plot(thresholds, (fnr+fpr)/2, label=f'Detection curve')
+    plt.plot(thresholds[idx], HTER[idx], 'ro', label=f'Optimal Threshold: {thresholds[idx]:.2f}')
+    plt.xlabel("Threshold")
+    plt.ylabel("HTER")
+    plt.title("Detection curve")
+    plt.grid()
+    plt.legend()
+    plt.savefig("pictures/HTER_curve.png")
     
 def plot_PR(Tr, Pr):
     precision, recall, thresholds = precision_recall_curve(Tr, Pr, pos_label=1)

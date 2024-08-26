@@ -3,3 +3,5 @@ data/val_img/*.jpg
 */__pycache__
 *.pyc 
 checkpoint/checkpoint_**/*
+
+.venv
