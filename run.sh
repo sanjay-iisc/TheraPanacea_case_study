@@ -9,14 +9,6 @@ source ~/TheraEnv/bin/activate
 ### 4 
 # python3 train.py --LR 0.001 --image_size 224 224 3 --B 16 --E 100 --dense_units 16 --base_model "VGG16_Based" --is_chkpt_load True --is_aug_data True
 
-<<<<<<< HEAD
-#5---log_file_20240825-165455_
-# python3 train.py --LR 0.001 --B 16 --E 200 --dense_units 256 --image_size 64 64 3 --base_model MobileV2_Based --is_aug_data True
-
-# python3 train.py --is_chkpt_load "False" --is_aug_data "False" --LR 0.01
-
-python3 test.py
-=======
 ## run 5
 # python3 train.py --LR 0.001 --imagesize 224 224 3 --B 16 --E 80 --denseunits 16 --basemodel "VGG16_Based" --ischkptload false --isaugdata false
 
@@ -24,4 +16,3 @@ python3 test.py
 # python train.py --LR 0.00065 --B 8 --E 80 --denseunits 16 --imagesize 224 224 3 --basemodel "VGG16_Based" checkpoint_20240826-175517
 
  python train.py --LR 0.00065 --B 8 --E 80 --denseunits 16 --imagesize 224 224 3 --basemodel "VGG16_Based"
->>>>>>> comp_gpu
