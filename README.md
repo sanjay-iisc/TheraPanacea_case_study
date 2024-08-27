@@ -35,6 +35,14 @@ python3 train.py --LR 0.001 --B 16 --E 200 --dense_units 256 --image_size 224 22
 ```
 `train.py` is written in lower api of tensorflow and variable is self explainatory and weighted cross entropy function is used for loss to try to address the imblanced data. The base model is VGG16 trained weight on `imagenet`
 
+### Loss function 
+
+<div align="center">
+	<img src="pictures/loss_over_epochs.png" alt="Loss function">
+</div>
+
+Fine tunned vgg based model loss curve
+
 ### HTER
 **False Acceptance Rate (FAR):**
 $$\text{FAR} =  \frac{\text{FP}}{\text{TN} + \text{FP}}$$
@@ -65,38 +73,6 @@ $$\text{HTER}=\frac{\text{FRR}+\text{FAR}}{2}$$
 	<img src="pictures/HTER_curve.png" alt="HTER curve">
 </div>
 
-As required in cased, the threshold is based on HTER to minimize it.
+As required in this case, the threshold is based on HTER to minimize it. Thr=0.82
 
 #
-
-
-Number of zeros: 0.121025
-Number of ones: 0.878975
-
-to train: ./run 
-to test: python3 test.py
-
-
-thre:0.82
-[[ 2084   336]
- [ 2130 15450]]
-
-thre: 0.38
- [[ 1385  1035]
- [  403 17177]]
-
-thre: 0.6
-[[ 1769   651]
- [  982 16598]]
-
-thresh: 0.84
-[[ 2111   309]
- [ 2320 15260]]
-
-threshold:0.7
-[[ 1918   502]
- [ 1391 16189]]
-
- thr:0.52
- [[ 1650   770]
- [  746 16834]]

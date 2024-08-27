@@ -14,8 +14,8 @@ val_aucs = []
 train_prs = []
 val_prs = []
 
-
-with open('./log_file_20240824-212043_.txt', 'r') as f:
+filename='./logs/log_file_20240826-111818_.txt'#"logs/log_file_20240826-210342_.txt" #./logs/log_file_20240826-111818_.txt'
+with open(filename, 'r') as f:
     for i, line in enumerate(f):
         parts = line.strip().split(', ')
         epochs.append(i+1)
@@ -34,21 +34,21 @@ with open('./log_file_20240824-212043_.txt', 'r') as f:
 print(epochs)
 print(train_losses)
 print(val_aucs)
-def plot_metric(metric_name, train_values, val_values):
+def plot_metric(metric_name, train_values, val_values, xlim=[0.8,1.1]):
     plt.figure(figsize=(10, 6))
-    plt.plot(epochs, train_values, label=f'Train {metric_name}')
-    plt.plot(epochs, val_values, label=f'Val {metric_name}')
+    plt.plot(epochs, train_values, label=f'Train {metric_name}', marker='x')
+    plt.plot(epochs, val_values, label=f'Val {metric_name}', marker='o')
     plt.xlabel('Epochs')
     plt.ylabel(metric_name)
     plt.title(f'{metric_name} Over Epochs')
     plt.legend()
-    plt.ylim([0.8,1.1])
+    plt.ylim(xlim)
     plt.grid(True)
     plt.savefig(f'pictures/{metric_name.lower()}_over_epochs.png')
     plt.show()
 
 
-plot_metric('Loss', train_losses, val_losses)
+plot_metric('Loss', train_losses, val_losses, xlim=[0,0.6])
 plot_metric('F1 Score', train_F1_scores, val_F1_scores)
 plot_metric('Precision', train_precisions, val_precisions)
 plot_metric('Recall', train_recalls, val_recalls)
