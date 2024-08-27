@@ -2,5 +2,6 @@ data/train_img/*.jpg
 data/val_img/*.jpg
 */__pycache__
 *.pyc 
-checkpoint/checkpoint_**/*
+checkpoint/*
 
+!checkpoint/checkpoint_20240826-175517/epoch_16.ckpt.index
