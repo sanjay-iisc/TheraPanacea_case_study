@@ -19,7 +19,7 @@ class ImageDataLoader:
 
         self.train_paths, self.val_paths, self.train_labels, self.val_labels = self._split_paths_data()
 
-        print(self.train_paths[:10])
+
         # self.train_dataset = self._build_dataset(self.train_paths[:2500], self.train_labels[:2500])
         # self.val_dataset = self._build_dataset(self.val_paths[:100], self.val_labels[:100])
         
@@ -37,8 +37,8 @@ class ImageDataLoader:
     def _augment_image(self, image):
         image = tf.image.random_flip_left_right(image)
         image = tf.image.random_flip_up_down(image)
-        image = tf.image.random_brightness(image, max_delta=0.1)
-        image = tf.image.random_contrast(image, lower=0.9, upper=1.1)
+        image = tf.image.random_brightness(image, max_delta=0.2)
+        image = tf.image.random_contrast(image, lower=0.8, upper=1.1)
         image = tf.image.random_saturation(image, lower=0.9, upper=1.1)
         image = tf.image.random_hue(image, max_delta=0.05)
         return image
@@ -52,6 +52,7 @@ class ImageDataLoader:
         dataset = tf.data.Dataset.from_tensor_slices((img_paths, labels))
         dataset = dataset.map(self._load_image, num_parallel_calls=tf.data.experimental.AUTOTUNE)
         if self.augument:
+            tf.print("self.augument: ", self.augument)
             dataset = dataset.map(lambda x, y: (self._augment_image(x), y), num_parallel_calls=tf.data.experimental.AUTOTUNE)
         if self.is_shuffle:
             dataset = dataset.shuffle(buffer_size=2024)
